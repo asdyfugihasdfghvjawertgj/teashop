@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tea Shop</title>
+	<style type="text/css">
+
+		.main-content{
+			width: 1160px;
+			border: 1px solid red;
+			margin: 10%;
+			background-color: green;
+		}
+
+		.main-content h3{
+			text-align: center;
+		}
+
+		.mymenus{
+			width: 600px;
+			float: left;
+			background-color: pink;
+
+		}
+
+		.menu{
+			width: 175px;
+			float: left;
+			margin-right: 10px;
+			text-align: center;
+		}
+
+		.menu img{
+			width: 150px;
+		}
+		.menu button:active
+		{
+			background-color: blue;
+		}
+		
+		.red
+		{
+			border-radius: 50%;
+		}
+
+
+		.clear:after{
+			display: block;
+			clear: both;
+			content: "";
+			height: 0;
+			
+		}
+		.text-center{
+			text-align: center;
+		}
+		table{
+			width: 500px;
+		}
+	</style>
+	
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			showtable();
+			// body...
+			$('.red').on('click',function () {
+				// alert('hello');
+				var id=$(this).data('id');
+				var name = $(this).data('name');
+				var price = $(this).data('price');
+				var qty=1;
+				// alert(id + name + price);
+
+				var cart = localStorage.getItem('cart');
+
+				if (!cart) {
+					var cart = '{"mycart":[]}';
+				}
+
+				cart = JSON.parse(cart);
+				var mylist = {id:id,name:name,price:price,qty:qty};
+
+				var mycart = cart.mycart;
+				
+				
+					cart.mycart.push(mylist);
+				
+								
+				cart = JSON.stringify(cart);
+				localStorage.setItem('cart',cart);
+				showtable();
+			})
+
+			// get data from localStorage
+			function showtable() {
+				var mystoreditem = localStorage.getItem('cart');
+				if (mystoreditem) {
+					var mystoreditem = JSON.parse(mystoreditem);
+					var mycart = mystoreditem.mycart;
+
+					var html ='';
+					var total =0;
+					var j=1;
+					$.each(mycart,function (i,v) {
+						if (v) {
+							var id = v.id;
+							var name = v.name;
+							var price = v.price;
+							var qty = v.qty;
+							
+
+							html+=`<tr>+
+							<td>${j}</td>+
+							<td>${name}</td>+
+							<td>${price}</td>+
+							<td><input type="number" id="add" value="${qty}" data-id="${i}" min='0'></td>+
+							<td>${(price*qty)}</td>+
+							</tr>`;
+							total += (price*qty);
+							j++;
+						}
+					})
+
+
+					html+='<tr>'+
+									'<td colspan="3" class="text-right">Total Amount:</td>'+
+									'<td colspan="3" class="text-center">'+total+'</td>'+
+								'</tr>';
+					html+='<tr><td colspan="6" class="text-center"><button class="order" data-total="'+total+'">Order</button></td></tr>';
+					$('tbody').html(html);
+				}else{
+					$('tbody').html('<tr><td colspan="5" class="text-center">Empty Cart!</td></tr>');
+				}
+			}
+
+				$('tbody').on('change','#add',function(){
+					var t=$(this).val();
+					var qty=$(this).data('qty');
+					var id=$(this).data('id');
+					var mystoreditem = localStorage.getItem('cart');
+				if (mystoreditem) {
+					var mystoreditem = JSON.parse(mystoreditem);
+					var mycart = mystoreditem.mycart;
+					mycart[id].qty=parseInt(t);
+					$.each(mycart,function(i,v){
+						if(v.qty==0){
+							mycart.splice(id,1);
+						}
+					})
+					cart=JSON.stringify(mystoreditem);
+					localStorage.setItem('cart',cart);
+					showtable();
+				}
+			})
+            
+
+			
+			// Add Qty
+			
+			
+
+			$('tbody').on('click','.order',function () {
+				var total = $(this).data('total');
+				var order = confirm('Are You Sure to order? Your Total Amount is: '+total);
+				if (order==true) {
+					localStorage.clear();
+					showtable();
+				    alert('Your Order Successfully complete');
+				}
+			})
+		})
+	</script>
+</head>
+<body>
+	<div class="main-content clear">
+		<div class="mymenus">
+			<div class="section1 clear">
+				<h3>Menus</h3>
+
+				<div class="menu">
+					Tea
+					<img src="1.jpg" width="150" height="150">
+					<button data-id="1" data-name="Mint Tea" data-price="800" class="red">Add to Cart</button>
+				</div>
+				<div class="menu">
+					Tea
+					<img src="2.jpg" width="150" height="150">
+					<button data-id="2" data-name="Dado Tea" data-price="1200" class="red">Add to Cart</button>
+				</div>
+				<div class="menu">
+					Tea
+					<img src="3.jpg" width="150" height="150">
+					<button data-id="3" data-name="Bubble Tea" data-price="2000" class="red">Add to Cart</button>
+				</div>
+			</div>
+			<div class="section2 clear">
+				<h3>Menus</h3>
+
+				<div class="menu">
+					Cake
+					<img src="4.jpg" width="150" height="150">
+					<button data-id="4" data-name="Rainbow Cake" data-price="4000" class="red">Add to Cart</button>
+				</div>
+				<div class="menu">
+					Cake
+					<img src="5.jpg" width="150" height="150">
+					<button data-id="5" data-name="Chocolate Sussis Rollcate" data-price="4000" class="red">Add to Cart</button>
+				</div>
+				<div class="menu">
+					Cake
+					<img src="6.jpg" width="150" height="150">
+					<button data-id="6" data-name="Cupcakes" data-price="4000" class="red">Add to Cart</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="cart">
+			<h3>My Cart </h3>
+			<table border="1" cellspacing="0" cellpadding="5">
+				<thead>
+					<tr>
+						<th>No</th>
+						<th>Name</th>
+						<th>Price</th>
+						<th>Qty</th>
+						<th>Sub total</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>
